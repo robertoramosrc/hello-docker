@@ -1,6 +1,6 @@
 package br.com.sekiro.hellodocker.api.v1;
 
-import br.com.sekiro.hellodocker.api.SaudacaoDTO;
+import br.com.sekiro.hellodocker.api.v1.dto.SaudacaoDTO;
 import br.com.sekiro.hellodocker.business.HelloService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;

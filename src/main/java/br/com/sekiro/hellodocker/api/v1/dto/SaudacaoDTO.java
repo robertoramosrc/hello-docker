@@ -1,4 +1,4 @@
-package br.com.sekiro.hellodocker.api;
+package br.com.sekiro.hellodocker.api.v1.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
