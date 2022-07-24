@@ -1,9 +1,6 @@
 package br.com.sekiro.hellodocker.api.v1.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -11,6 +8,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Builder
 public class SaudacaoDTO {
     private String mensagem;
     private LocalDate data;
