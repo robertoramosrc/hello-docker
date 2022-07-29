@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: naomori-kawarada
+  labels:
+    app: naomori-kawarada
+spec:
+  ports:
+    - port: 9095
+      name: java
+  clusterIP: None
+  selector:
+    app: naomori-kawarada
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: naomori-kawarada
+spec:
+  serviceName: "naomori-kawarada"
+  replicas: 2
+  selector:
+    matchLabels:
+      app: naomori-kawarada
+  template:
+    metadata:
+      labels:
+        app: naomori-kawarada
+    spec:
+      containers:
+        - name: naomori-kawarada
+          image: betaum/naomori-kawarada:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9095
+              name: java
+          volumeMounts:
+            - name: java
+              mountPath: /mnt/data
+  volumeClaimTemplates:
+    - metadata:
+        name: java
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi

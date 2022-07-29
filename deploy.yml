@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: naomori-kawarada
+  labels:
+    app: naomori-kawarada
+    service: naomori-kawarada
+spec:
+  ports:
+    - port: 9095
+      name: http
+  selector:
+    app: naomori-kawarada
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sa-naomori-kawarada
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: naomori-kawarada
+  labels:
+    app: naomori-kawarada
+    version: v1
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: naomori-kawarada
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: naomori-kawarada
+        version: v1
+    spec:
+      serviceAccountName: sa-naomori-kawarada
+      volumes:
+        - name: persistent-gradle
+          persistentVolumeClaim:
+            claimName: gradle-pv-claim
+      containers:
+        - name: naomori-kawarada
+          image: betaum/naomori-kawarada:1.0.0
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: naomori-kawarada-secret
+                  key: password
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "128m"
+            limits:
+              memory: "500Mi"
+              cpu: "500m"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9095
+          volumeMounts:
+            - name: persistent-gradle
+              mountPath: /mnt/data
+          readinessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /actuator/health
+              port: 9095
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 5
+          livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /actuator/health
+              port: 9095
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 5
